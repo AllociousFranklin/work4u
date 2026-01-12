@@ -341,7 +341,7 @@ export const ContactPage = () => {
                         borderColor: isTyping ? "rgba(212,175,55,0.15)" : "rgba(255,255,255,0.05)"
                     }}
                     transition={{ duration: 0.8 }}
-                    className="w-full max-w-5xl md:h-[600px] min-h-[500px] bg-white/[0.01] border rounded-[24px] md:rounded-[40px] backdrop-blur-[40px] relative overflow-hidden flex items-center justify-center group"
+                    className="w-full max-w-5xl md:min-h-[600px] h-auto bg-white/[0.01] border rounded-[24px] md:rounded-[40px] backdrop-blur-[40px] relative overflow-hidden flex items-center justify-center group"
                 >
                     {/* Glass Refraction Layer (Simulation) */}
                     <div className="absolute inset-0 pointer-events-none border border-white/5 rounded-[40px]" />
@@ -356,7 +356,7 @@ export const ContactPage = () => {
                                 animate={{ x: 0, opacity: 1, filter: 'blur(0px)' }}
                                 exit={{ x: 200, opacity: 0, filter: 'blur(20px)' }}
                                 transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-                                className="w-full flex flex-col items-center p-20"
+                                className="w-full flex flex-col items-center p-8 md:p-16"
                             >
                                 <div className="text-center mb-10 md:mb-16 px-4">
                                     <span className="text-[9px] md:text-[11px] text-[#D4AF37] tracking-[0.6em] md:tracking-[1em] uppercase block mb-4 md:mb-6" style={{ fontFamily: '"Lexend Peta", sans-serif' }}>01 / PARTNER IDENTIFICATION</span>
@@ -388,7 +388,7 @@ export const ContactPage = () => {
                                 animate={{ x: 0, opacity: 1, filter: 'blur(0px)' }}
                                 exit={{ x: -100, opacity: 0, filter: 'blur(20px)' }}
                                 transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-                                className="w-full flex flex-col items-center p-20"
+                                className="w-full flex flex-col items-center p-8 md:p-16"
                             >
                                 <div className="text-center mb-10 md:mb-16 px-4">
                                     <span className="text-[9px] md:text-[11px] text-[#D4AF37] tracking-[0.6em] md:tracking-[1em] uppercase block mb-4 md:mb-6" style={{ fontFamily: '"Lexend Peta", sans-serif' }}>02 / VERTICAL IDENTIFICATION</span>
