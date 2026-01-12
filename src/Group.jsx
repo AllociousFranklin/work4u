@@ -22,7 +22,7 @@ export const Group = ({ className = "" }) => {
     return (
         <>
             {/* --- DESKTOP VIEW (Hidden on Mobile) --- */}
-            <div className={`hidden md:block absolute w-[920px] h-[54px] top-0 left-0 ${className}`}>
+            <div className={`hidden md:block relative w-[920px] h-[54px] ${className}`}>
                 {/* Desktop Background */}
                 <div className="absolute w-full h-full top-0 left-0 bg-white/[0.05] rounded-[50px] border-[2px] border-white/20 backdrop-blur-[15px] shadow-lg" />
                 {/* Desktop Links */}
