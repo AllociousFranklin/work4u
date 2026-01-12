@@ -7,7 +7,7 @@ export const ConnectExpertsCard = ({ className = "w-[286px] h-[100px]" }) => {
             <div className="absolute w-full h-full top-0 left-0 bg-[#ffffff10] rounded-[40px] backdrop-blur-[20px] border border-white/20 shadow-xl transition-all duration-300 group-hover:bg-[#ffffff20] group-hover:scale-[1.05] group-hover:border-white/40 group-active:scale-95 group-hover:shadow-[0_0_30px_rgba(255,255,255,0.15)]" />
 
             {/* Content */}
-            <div className="absolute w-full h-full top-0 left-0 flex items-center px-4 z-10 transition-transform duration-300 group-hover:scale-[1.05] group-active:scale-95">
+            <div className="relative w-full min-h-full flex items-center px-4 py-4 z-10 transition-transform duration-300 group-hover:scale-[1.05] group-active:scale-95">
                 {/* Profile Image */}
                 <div className="w-[70px] h-[70px] rounded-full overflow-hidden border-2 border-white/50 bg-gray-800 transition-all duration-300 group-hover:border-white">
                     <img

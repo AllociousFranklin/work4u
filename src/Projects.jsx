@@ -60,9 +60,22 @@ const DataStat = ({ value, label, delay }) => {
 };
 
 const ProjectCaseStudy = ({ index, category, title, description, stats, mediaUrl, youtubeId, videoSrc, alignRight, isActive }) => {
-    // Only use basic ref for animation triggering, not playback control
     const containerRef = useRef(null);
-    // const isProjectInView = useInView(containerRef, { amount: 0.3 }); // Removed in favor of explicit isActive prop
+    const [isMobile, setIsMobile] = useState(false);
+
+    // Determine mobile state
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
+    // Local in-view detection for mobile
+    const isInternalInView = useInView(containerRef, { amount: 0.25 });
+
+    // Decide playback: Desktop uses parent isActive, Mobile uses local in-view
+    const shouldPlay = isMobile ? isInternalInView : isActive;
 
     return (
         <section ref={containerRef} className="w-full md:h-screen md:sticky md:top-0 flex flex-col items-center justify-center relative bg-[#050505] border-t border-white/5 shadow-[0_-10px_40px_rgba(0,0,0,0.5)] z-0">
@@ -108,10 +121,10 @@ const ProjectCaseStudy = ({ index, category, title, description, stats, mediaUrl
                         initial={{ opacity: 0, scale: 0.95 }}
                         whileInView={{ opacity: 1, scale: 1 }}
                         viewport={{ once: true }}
-                        transition={{ duration: 0.8 }}
+                        transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
                         className="w-full aspect-video bg-zinc-900 rounded-xl overflow-hidden border border-white/10 relative group shadow-2xl"
                     >
-                        {(isActive && youtubeId) ? (
+                        {(shouldPlay && youtubeId) ? (
                             <iframe
                                 width="100%"
                                 height="100%"
@@ -122,7 +135,7 @@ const ProjectCaseStudy = ({ index, category, title, description, stats, mediaUrl
                                 allowFullScreen
                                 className="absolute inset-0 w-full h-full object-cover"
                             ></iframe>
-                        ) : (isActive && videoSrc) ? (
+                        ) : (shouldPlay && videoSrc) ? (
                             <video
                                 className="absolute inset-0 w-full h-full object-cover"
                                 autoPlay

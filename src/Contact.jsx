@@ -256,22 +256,56 @@ const BookingCalendar = ({ onSelect }) => {
 
 export const ContactPage = () => {
     const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
     const [selectedService, setSelectedService] = useState(null);
     const [booking, setBooking] = useState(null);
     const [step, setStep] = useState(1);
     const [isSuccess, setIsSuccess] = useState(false);
+    const [isSending, setIsSending] = useState(false);
     const [isTyping, setIsTyping] = useState(false);
     const typingTimeoutRef = useRef(null);
 
-    const handleTextInput = (val) => {
-        setName(val);
+    const handleTextInput = (val, setter) => {
+        setter(val);
         setIsTyping(true);
         if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
         typingTimeoutRef.current = setTimeout(() => setIsTyping(false), 500);
     };
 
     const handleKeyDown = (e) => {
-        if (e.key === 'Enter' && name.length > 2 && step === 1) setStep(2);
+        if (e.key === 'Enter') {
+            if (step === 1 && name.length > 2) setStep(2);
+            if (step === 2 && email.includes('@')) setStep(3);
+        }
+    };
+
+    const submitForm = async () => {
+        setIsSending(true);
+        try {
+            const formData = new FormData();
+            formData.append("access_key", "5f4297c9-658c-46cc-bb4f-af50e76ca6a8");
+            formData.append("name", name);
+            formData.append("email", email);
+            formData.append("service", selectedService);
+            formData.append("booking_slot", booking);
+            formData.append("subject", `New Inquiry: ${name} - ${selectedService}`);
+
+            const response = await fetch("https://api.web3forms.com/submit", {
+                method: "POST",
+                body: formData
+            });
+
+            if (response.ok) {
+                setIsSuccess(true);
+            } else {
+                alert("Something went wrong. Please try again.");
+            }
+        } catch (error) {
+            console.error(error);
+            alert("Error sending message.");
+        } finally {
+            setIsSending(false);
+        }
     };
 
     return (
@@ -318,18 +352,18 @@ export const ContactPage = () => {
 
                     <AnimatePresence mode="wait">
 
-                        {/* Step 1: Identify Partner */}
+                        {/* Step 1: Identify Partner (Name) */}
                         {!isSuccess && step === 1 && (
                             <motion.div
                                 key="step1"
                                 initial={{ x: -200, opacity: 0, filter: 'blur(20px)' }}
                                 animate={{ x: 0, opacity: 1, filter: 'blur(0px)' }}
                                 exit={{ x: 200, opacity: 0, filter: 'blur(20px)' }}
-                                transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-                                className="w-full flex flex-col items-center p-8 md:p-16"
+                                transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
+                                className="w-full flex flex-col items-center px-8 py-16 md:p-16"
                             >
                                 <div className="text-center mb-10 md:mb-16 px-4">
-                                    <span className="text-[9px] md:text-[11px] text-[#D4AF37] tracking-[0.6em] md:tracking-[1em] uppercase block mb-4 md:mb-6" style={{ fontFamily: '"Lexend Peta", sans-serif' }}>01 / PARTNER IDENTIFICATION</span>
+                                    <span className="text-[9px] md:text-[11px] text-[#D4AF37] tracking-[0.6em] md:tracking-[1em] uppercase block mb-4 md:mb-6 mt-8" style={{ fontFamily: '"Lexend Peta", sans-serif' }}>01 / PARTNER IDENTIFICATION</span>
                                     <KineticText
                                         text="Who leads this vision?"
                                         className="text-white text-3xl sm:text-5xl md:text-7xl font-extralight tracking-tighter leading-tight"
@@ -341,27 +375,74 @@ export const ContactPage = () => {
                                     placeholder="Full name..."
                                     value={name}
                                     onKeyDown={handleKeyDown}
-                                    onChange={(e) => handleTextInput(e.target.value)}
+                                    onChange={(e) => handleTextInput(e.target.value, setName)}
                                     autoFocus
                                 />
                                 <p className={`mt-6 md:mt-10 text-[8px] md:text-[10px] text-white/20 tracking-[0.4em] md:tracking-[0.8em] uppercase text-center transition-opacity duration-700 ${name.length > 2 ? 'opacity-100' : 'opacity-0'}`} style={{ fontFamily: '"Lexend Peta", sans-serif' }}>
                                     Press Enter to Proceed
                                 </p>
+                                {name.length > 2 && (
+                                    <button
+                                        onClick={() => setStep(2)}
+                                        className="mt-4 px-8 py-3 bg-white/10 border border-white/20 rounded-full text-[10px] text-[#D4AF37] uppercase tracking-[0.2em] hover:bg-[#D4AF37] hover:text-black transition-all md:hidden"
+                                        style={{ fontFamily: '"Lexend Peta", sans-serif' }}
+                                    >
+                                        Proceed →
+                                    </button>
+                                )}
                             </motion.div>
                         )}
 
-                        {/* Step 2: Strategic Focus */}
+                        {/* Step 2: Communication Channel (Email) - NEW */}
                         {!isSuccess && step === 2 && (
                             <motion.div
                                 key="step2"
                                 initial={{ x: 100, opacity: 0, filter: 'blur(20px)' }}
                                 animate={{ x: 0, opacity: 1, filter: 'blur(0px)' }}
                                 exit={{ x: -100, opacity: 0, filter: 'blur(20px)' }}
-                                transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-                                className="w-full flex flex-col items-center p-8 md:p-16"
+                                transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
+                                className="w-full flex flex-col items-center px-8 py-16 md:p-16"
                             >
                                 <div className="text-center mb-10 md:mb-16 px-4">
-                                    <span className="text-[9px] md:text-[11px] text-[#D4AF37] tracking-[0.6em] md:tracking-[1em] uppercase block mb-4 md:mb-6" style={{ fontFamily: '"Lexend Peta", sans-serif' }}>02 / VERTICAL IDENTIFICATION</span>
+                                    <span className="text-[9px] md:text-[11px] text-[#D4AF37] tracking-[0.6em] md:tracking-[1em] uppercase block mb-4 md:mb-6 mt-8" style={{ fontFamily: '"Lexend Peta", sans-serif' }}>02 / COMMUNICATION LINK</span>
+                                    <h3 className="text-white text-3xl sm:text-5xl md:text-6xl font-extralight tracking-tighter" style={{ fontFamily: '"Montserrat", sans-serif' }}>Direct Contact</h3>
+                                </div>
+                                <FloatingField
+                                    label="Secure Email"
+                                    placeholder="email@example.com"
+                                    value={email}
+                                    onKeyDown={handleKeyDown}
+                                    onChange={(e) => handleTextInput(e.target.value, setEmail)}
+                                    autoFocus
+                                />
+                                <div className="flex gap-8">
+                                    <button onClick={() => setStep(1)} className="mt-6 md:mt-10 text-[9px] md:text-[10px] text-white/20 tracking-[0.4em] md:tracking-[0.8em] uppercase hover:text-white transition-colors" style={{ fontFamily: '"Montserrat", sans-serif' }}>← Back</button>
+                                    {email.includes('@') && (
+                                        <button
+                                            onClick={() => setStep(3)}
+                                            className="mt-6 md:mt-10 px-8 py-3 bg-white/10 border border-white/20 rounded-full text-[10px] text-[#D4AF37] uppercase tracking-[0.2em] hover:bg-[#D4AF37] hover:text-black transition-all"
+                                            style={{ fontFamily: '"Lexend Peta", sans-serif' }}
+                                        >
+                                            Next →
+                                        </button>
+                                    )}
+                                </div>
+                            </motion.div>
+                        )}
+
+
+                        {/* Step 3: Strategic Focus (Services) - Previously Step 2 */}
+                        {!isSuccess && step === 3 && (
+                            <motion.div
+                                key="step3"
+                                initial={{ x: 100, opacity: 0, filter: 'blur(20px)' }}
+                                animate={{ x: 0, opacity: 1, filter: 'blur(0px)' }}
+                                exit={{ x: -100, opacity: 0, filter: 'blur(20px)' }}
+                                transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
+                                className="w-full flex flex-col items-center px-8 py-16 md:p-16"
+                            >
+                                <div className="text-center mb-10 md:mb-16 px-4">
+                                    <span className="text-[9px] md:text-[11px] text-[#D4AF37] tracking-[0.6em] md:tracking-[1em] uppercase block mb-4 md:mb-6 mt-8" style={{ fontFamily: '"Lexend Peta", sans-serif' }}>03 / VERTICAL IDENTIFICATION</span>
                                     <h3 className="text-white text-3xl sm:text-5xl md:text-6xl font-extralight tracking-tighter" style={{ fontFamily: '"Montserrat", sans-serif' }}>Strategic Focus</h3>
                                 </div>
                                 <div className="flex flex-wrap justify-center gap-4 md:gap-8 px-4">
@@ -370,7 +451,7 @@ export const ContactPage = () => {
                                             key={service}
                                             onClick={() => {
                                                 setSelectedService(service);
-                                                setStep(3);
+                                                setStep(4);
                                             }}
                                             className="px-8 md:px-16 py-4 md:py-6 border border-white/5 bg-white/[0.02] rounded-full text-[10px] md:text-xs font-bold tracking-[0.2em] md:tracking-[0.4em] uppercase hover:bg-white hover:text-black transition-all duration-500"
                                             style={{ fontFamily: '"Lexend Peta", sans-serif' }}
@@ -379,22 +460,22 @@ export const ContactPage = () => {
                                         </button>
                                     ))}
                                 </div>
-                                <button onClick={() => setStep(1)} className="mt-12 md:mt-20 text-[9px] md:text-[10px] text-white/20 tracking-[0.4em] md:tracking-[0.6em] uppercase hover:text-white transition-colors" style={{ fontFamily: '"Montserrat", sans-serif' }}>← Back</button>
+                                <button onClick={() => setStep(2)} className="mt-12 md:mt-20 text-[9px] md:text-[10px] text-white/20 tracking-[0.4em] md:tracking-[0.6em] uppercase hover:text-white transition-colors" style={{ fontFamily: '"Montserrat", sans-serif' }}>← Back</button>
                             </motion.div>
                         )}
 
-                        {/* Step 3: Global Strategy Booking */}
-                        {!isSuccess && step === 3 && (
+                        {/* Step 4: Global Strategy Booking - Previously Step 3 */}
+                        {!isSuccess && step === 4 && (
                             <motion.div
-                                key="step3"
+                                key="step4"
                                 initial={{ x: -100, opacity: 0, filter: 'blur(20px)' }}
                                 animate={{ x: 0, opacity: 1, filter: 'blur(0px)' }}
                                 exit={{ scale: 1.1, opacity: 0 }}
-                                transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-                                className="w-full flex flex-col items-center p-16"
+                                transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
+                                className="w-full flex flex-col items-center px-8 py-16 md:p-16"
                             >
                                 <div className="text-center mb-8 md:mb-12 px-4">
-                                    <span className="text-[9px] md:text-[11px] text-[#D4AF37] tracking-[0.6em] md:tracking-[1em] uppercase block mb-4 md:mb-6" style={{ fontFamily: '"Lexend Peta", sans-serif' }}>03 / SECURE STRATEGY SESSION</span>
+                                    <span className="text-[9px] md:text-[11px] text-[#D4AF37] tracking-[0.6em] md:tracking-[1em] uppercase block mb-4 md:mb-6 mt-8" style={{ fontFamily: '"Lexend Peta", sans-serif' }}>04 / SECURE STRATEGY SESSION</span>
                                     <h3 className="text-white text-3xl sm:text-5xl md:text-6xl font-extralight tracking-tighter" style={{ fontFamily: '"Montserrat", sans-serif' }}>Finalize Brief</h3>
                                 </div>
                                 <BookingCalendar onSelect={setBooking} />
@@ -402,14 +483,15 @@ export const ContactPage = () => {
                                     <motion.button
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
-                                        onClick={() => setIsSuccess(true)}
-                                        className="mt-12 md:mt-16 px-12 md:px-24 py-5 md:py-8 bg-white text-black font-black text-xs md:text-sm tracking-[0.6em] md:tracking-[0.8em] uppercase rounded-full shadow-[0_30px_90px_rgba(255,255,255,0.2)] hover:bg-[#D4AF37] transition-all"
+                                        onClick={submitForm}
+                                        disabled={isSending}
+                                        className="mt-12 md:mt-16 px-12 md:px-24 py-5 md:py-8 bg-white text-black font-black text-xs md:text-sm tracking-[0.6em] md:tracking-[0.8em] uppercase rounded-full shadow-[0_30px_90px_rgba(255,255,255,0.2)] hover:bg-[#D4AF37] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                                         style={{ fontFamily: '"Lexend Peta", sans-serif' }}
                                     >
-                                        Establish Connection
+                                        {isSending ? "Transmitting..." : "Establish Connection"}
                                     </motion.button>
                                 )}
-                                <button onClick={() => setStep(2)} className="mt-8 md:mt-12 text-[9px] md:text-[10px] text-white/20 tracking-[0.4em] md:tracking-[0.6em] uppercase hover:text-white transition-colors" style={{ fontFamily: '"Montserrat", sans-serif' }}>← Modify Brief</button>
+                                <button onClick={() => setStep(3)} className="mt-8 md:mt-12 text-[9px] md:text-[10px] text-white/20 tracking-[0.4em] md:tracking-[0.6em] uppercase hover:text-white transition-colors" style={{ fontFamily: '"Montserrat", sans-serif' }}>← Modify Brief</button>
                             </motion.div>
                         )}
 

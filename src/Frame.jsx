@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { Box } from "./Box";
 import { TransformCard } from "./TransformCard";
 import { Group } from "./Group";
@@ -8,6 +9,7 @@ import { WeBuildDigital } from "./WeBuildDigital";
 import { FromWebDesignAnd } from "./FromWebDesignAnd";
 import { ContactButton } from "./ContactButton";
 import { Sidebar } from "./Sidebar";
+import videoBg from "./assets/video.mp4";
 
 export const Frame = () => {
     const [dims, setDims] = useState({ width: 1280, height: 820, scale: 1 });
@@ -45,47 +47,100 @@ export const Frame = () => {
 
                 <Group />
 
-                {/* Mobile Header with Nav */}
-                <div className="w-full flex flex-col items-center gap-6 z-10 animate-slide-left">
-                    <div className="w-full flex justify-start px-2">
-                        <h1 className="text-white text-3xl font-normal" style={{ fontFamily: '"Satisfy", cursive' }}>Work4U</h1>
-                    </div>
+                {/* Mobile Header with Nav - Slide In From Right */}
+                <motion.div
+                    initial={{ opacity: 0, x: 50 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 2, ease: [0.22, 1, 0.36, 1] }}
+                    className="w-full flex flex-col items-center gap-6 z-10"
+                >
+                    {/* Logo Removed */}
                     <ContactButton className="w-[160px] h-[50px]" />
+                </motion.div>
+
+
+                {/* Full Screen Video Background */}
+                <div className="fixed inset-0 z-0 pointer-events-none">
+                    <video
+                        className="absolute inset-0 w-full h-full object-cover opacity-60"
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        src={videoBg}
+                    />
+                    <div className="absolute inset-0 bg-black/40" /> {/* Contrast Overlay */}
                 </div>
 
+                {/* Spacer to push content down slightly since Box is gone */}
+                <div className="h-20" />
 
-                {/* Video / Hero Area - Native Sizing */}
-                <div className="w-full flex justify-center items-center py-4 animate-float-bottom [animation-delay:400ms] z-10">
-                    <div className="relative w-full max-w-[340px] aspect-[1.5/1]">
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-[0.35]">
-                            <Box className="relative top-0 left-0" />
-                        </div>
-                    </div>
-                </div>
-
-                {/* Main Text Content - Centered */}
-                <div className="w-full flex flex-col items-center text-center gap-6 animate-float-bottom [animation-delay:800ms] z-10">
-                    <div className="w-full flex justify-center">
-                        <WeBuildDigital className="mx-auto text-center scale-90" />
-                    </div>
-                    <div className="w-full max-w-[320px] flex justify-center">
+                {/* Main Text Content - Staggered Animations */}
+                <div className="w-full flex flex-col items-center text-center gap-6 z-10">
+                    <motion.div
+                        initial={{ opacity: 0, x: 50 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true, margin: "-10%" }}
+                        transition={{ duration: 2, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
+                        className="w-full flex justify-center"
+                    >
+                        <WeBuildDigital className="mx-auto text-center scale-[0.85]" />
+                    </motion.div>
+                    <motion.div
+                        initial={{ opacity: 0, y: 50 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "-10%" }}
+                        transition={{ duration: 2, ease: [0.22, 1, 0.36, 1], delay: 0.4 }}
+                        className="w-full max-w-[320px] flex justify-center"
+                    >
                         <FromWebDesignAnd className="text-center mx-auto" />
-                    </div>
+                    </motion.div>
                 </div>
 
-                {/* Cards Container - Stacked and Centered */}
-                <div className="w-full flex flex-col items-center gap-6 animate-float-bottom [animation-delay:1200ms] z-10">
-                    <TransformCard className="w-full max-w-[350px] h-[89px]" />
-                    <WhatWeDoCard className="w-full max-w-[300px] h-[195px]" />
-                    <ConnectExpertsCard className="w-full max-w-[300px] h-[100px]" />
+                {/* Cards Container - Stacked and Centered - Late Arrival */}
+                <div className="w-full flex flex-col items-center gap-12 z-10">
+                    <motion.div
+                        initial={{ opacity: 0, y: 50 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "-10%" }}
+                        transition={{ duration: 2, ease: [0.22, 1, 0.36, 1], delay: 0.6 }}
+                    >
+                        <TransformCard className="w-full max-w-[340px] h-auto min-h-[100px]" />
+                    </motion.div>
+
+                    <motion.div
+                        initial={{ opacity: 0, y: 50 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "-10%" }}
+                        transition={{ duration: 2, ease: [0.22, 1, 0.36, 1], delay: 0.8 }}
+                    >
+                        <WhatWeDoCard className="w-full max-w-[340px] h-auto min-h-[220px]" />
+                    </motion.div>
+
+                    <motion.div
+                        initial={{ opacity: 0, y: 50 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "-10%" }}
+                        transition={{ duration: 2, ease: [0.22, 1, 0.36, 1], delay: 1.0 }}
+                    >
+                        <ConnectExpertsCard className="w-full max-w-[340px] h-auto min-h-[120px]" />
+                    </motion.div>
                 </div>
 
                 {/* Agency Text for Mobile */}
-                <div className="w-full flex justify-center mt-4 animate-float-bottom [animation-delay:1600ms] z-10">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 2, delay: 1.2 }}
+                    className="w-full flex justify-center mt-4 z-10"
+                >
                     <p className="text-[#666] text-[10px] tracking-[0.4em] uppercase" style={{ fontFamily: '"Montserrat", sans-serif' }}>
                         Digital Agency
                     </p>
-                </div>
+                </motion.div>
+
 
                 {/* Fixed Social Bar */}
                 <div className="fixed bottom-0 left-0 w-full p-4 flex justify-center bg-black/80 backdrop-blur-xl border-t border-white/10 z-[100]">

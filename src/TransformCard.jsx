@@ -2,7 +2,8 @@ export const TransformCard = ({ className = "w-[547px] h-[89px]" }) => {
     return (
         <div className={`${className} relative group cursor-pointer`}>
             {/* Background with subtle glass effect and rounded corners */}
-            <div className="absolute w-full h-full top-0 left-0 bg-black/90 rounded-[50px] border-[3px] border-solid border-white flex items-center justify-between px-3 pl-10 z-10 box-border backdrop-blur-sm transition-all duration-300 group-hover:scale-[1.02] group-hover:shadow-[0_0_30px_rgba(255,255,255,0.15)] group-active:scale-95">
+            {/* Background with subtle glass effect and rounded corners */}
+            <div className="relative w-full min-h-full bg-black/90 rounded-[50px] border-[3px] border-solid border-white flex items-center justify-between px-3 pl-10 py-2 z-10 box-border backdrop-blur-sm transition-all duration-300 group-hover:scale-[1.02] group-hover:shadow-[0_0_30px_rgba(255,255,255,0.15)] group-active:scale-95">
 
                 <span
                     className="text-white text-[20px] font-normal tracking-wide flex-1 text-left"

@@ -39,9 +39,10 @@ const ServiceCard = ({ title, tagline, description, color, index, children }) =>
                         </div>
 
                         <motion.div
-                            initial={{ opacity: 0, x: -20 }}
+                            initial={{ opacity: 0, x: 50 }}
                             whileInView={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.8 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
                         >
                             <h2
                                 className="text-white text-4xl sm:text-5xl md:text-7xl font-extralight tracking-tight mb-2 leading-tight"
@@ -53,18 +54,20 @@ const ServiceCard = ({ title, tagline, description, color, index, children }) =>
                         </motion.div>
 
                         <motion.p
-                            initial={{ opacity: 0 }}
-                            whileInView={{ opacity: 1 }}
-                            transition={{ duration: 0.8, delay: 0.2 }}
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1], delay: 0.3 }}
                             className="text-[#D4AF37] text-sm md:text-xl font-medium tracking-[0.15em] md:tracking-[0.2em] uppercase"
                         >
                             {tagline}
                         </motion.p>
 
                         <motion.p
-                            initial={{ opacity: 0 }}
-                            whileInView={{ opacity: 1 }}
-                            transition={{ duration: 0.8, delay: 0.4 }}
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1], delay: 0.6 }}
                             className="text-white/70 text-base md:text-lg leading-relaxed max-w-lg font-light"
                         >
                             {description}
@@ -111,7 +114,7 @@ const WebDesignVisual = () => {
 
                 {/* Floating Elements (Glassmorphism Layers) */}
                 <motion.div
-                    className="absolute -right-12 -bottom-12 w-[140px] h-[240px] bg-black/60 border border-white/20 rounded-[24px] backdrop-blur-xl shadow-2xl z-20 flex flex-col items-center justify-center"
+                    className="absolute -right-4 -bottom-4 md:-right-12 md:-bottom-12 w-[100px] h-[180px] md:w-[140px] md:h-[240px] bg-black/60 border border-white/20 rounded-[24px] backdrop-blur-xl shadow-2xl z-20 flex flex-col items-center justify-center"
                     transformTemplate={(_, generated) => `translateZ(80px) ${generated}`}
                 >
                     <p className="text-white/40 font-mono text-xs rotate-90">MOBILE</p>
