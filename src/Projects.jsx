@@ -1,457 +1,306 @@
 /* eslint-disable react/no-unknown-property */
-import React, { useState, useEffect, useRef, Suspense } from 'react';
-import { motion, AnimatePresence, useScroll, useTransform, useSpring, useInView } from 'framer-motion';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { PerspectiveCamera, MeshTransmissionMaterial, Environment, Float } from '@react-three/drei';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, useScroll, useTransform, useInView, useMotionValue, animate } from 'framer-motion';
 import { Group } from './Group';
-import * as THREE from 'three';
+import { CustomCursor } from './CustomCursor';
 
-// --- Shared Assets & Utilities (Onyx Studio Theme) ---
+// --- Shared Assets ---
 
-const NoiseOverlay = () => (
-    <div className="fixed inset-0 pointer-events-none z-[9999] opacity-[0.05] mix-blend-overlay"
-        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
-    />
-);
-
-const StudioBackdrop = () => (
-    <div className="fixed inset-0 z-[-1] pointer-events-none bg-black">
-        <div className="absolute inset-0 bg-[#080808]" />
-        <div className="absolute inset-0 bg-radial-vignette opacity-100" />
-        <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-white/[0.02] to-transparent pointer-events-none" />
+const OnyxBackground = () => (
+    <div className="fixed inset-0 z-[-1] bg-[#050505]">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_#000000_100%)] opacity-80" />
+        <div className="absolute inset-0 opacity-[0.03]"
+            style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
+        />
     </div>
 );
 
-const BlueprintGrid = () => (
-    <div className="fixed inset-0 z-0 pointer-events-none opacity-[0.08]">
-        <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-                <pattern id="projectsGrid" width="120" height="120" patternUnits="userSpaceOnUse">
-                    <path d="M 120 0 L 0 0 0 120" fill="none" stroke="white" strokeWidth="0.5" opacity="0.3" />
-                </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#projectsGrid)" />
-        </svg>
-    </div>
-);
+// --- Components ---
 
-const CustomCursor = () => {
-    const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-    const [isHovering, setIsHovering] = useState(false);
-
-    useEffect(() => {
-        const moveCursor = (e) => {
-            setMousePos({ x: e.clientX, y: e.clientY });
-            const target = e.target;
-            const interactive = target.closest('.project-card') || target.closest('button') || target.closest('a');
-            setIsHovering(!!interactive);
-        };
-        window.addEventListener("mousemove", moveCursor);
-        return () => window.removeEventListener("mousemove", moveCursor);
-    }, []);
-
-    return (
-        <motion.div
-            className="fixed top-0 left-0 w-8 h-8 rounded-full border border-white/20 pointer-events-none z-[10000] mix-blend-difference flex items-center justify-center bg-white/0"
-            animate={{
-                x: mousePos.x - 16,
-                y: mousePos.y - 16,
-                scale: isHovering ? 2.5 : 1,
-                borderColor: isHovering ? "rgba(255,255,255,0.1)" : "rgba(255,255,255,0.2)",
-                backgroundColor: isHovering ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0)"
-            }}
-            transition={{ type: "spring", stiffness: 250, damping: 25, mass: 0.1 }}
-        >
-            <AnimatePresence>
-                {isHovering && (
-                    <motion.span
-                        initial={{ opacity: 0, scale: 0.5 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="text-[3px] font-bold uppercase tracking-[0.5em] text-white"
-                        style={{ fontFamily: '"Lexend Peta", sans-serif' }}
-                    >
-                        ENTER
-                    </motion.span>
-                )}
-            </AnimatePresence>
-        </motion.div>
-    );
-};
-
-// --- Specialized Components ---
-
-const CounterOrb = ({ value, label, suffix = "%" }) => {
+const DataStat = ({ value, label, delay }) => {
     const ref = useRef(null);
-    const isInView = useInView(ref, { once: true });
-    const [count, setCount] = useState(0);
+    const isInView = useInView(ref, { once: true, margin: "-50px" });
+    const numberPart = value.match(/\d+/)?.[0] || 0;
+    const suffix = value.replace(/\d+/, '');
+    const prefix = value.startsWith('#') ? '#' : '';
+    const cleanSuffix = suffix.replace('#', '');
 
-    useEffect(() => {
+    // Animate when in view
+    React.useEffect(() => {
         if (isInView) {
-            let start = 0;
-            const duration = 2000;
-            const step = value / (duration / 16);
-            const timer = setInterval(() => {
-                start += step;
-                if (start >= value) {
-                    setCount(value);
-                    clearInterval(timer);
-                } else {
-                    setCount(Math.floor(start));
+            const controls = animate(0, parseInt(numberPart), {
+                duration: 2.5,
+                ease: [0.22, 1, 0.36, 1],
+                onUpdate: value => {
+                    if (ref.current) {
+                        ref.current.textContent = (prefix + Math.floor(value) + cleanSuffix);
+                    }
                 }
-            }, 16);
-            return () => clearInterval(timer);
+            });
+            return () => controls.stop();
         }
-    }, [isInView, value]);
+    }, [isInView, numberPart, prefix, cleanSuffix]);
 
-    const circumference = 2 * Math.PI * 45;
-    const offset = circumference - (count / 100) * circumference;
-
-    return (
-        <div ref={ref} className="flex flex-col items-center gap-4">
-            <div className="relative w-32 h-32 flex items-center justify-center">
-                <svg className="w-full h-full -rotate-90">
-                    <circle cx="64" cy="64" r="45" stroke="rgba(255,255,255,0.05)" strokeWidth="2" fill="none" />
-                    <motion.circle
-                        cx="64" cy="64" r="45" stroke="#D4AF37" strokeWidth="2" fill="none"
-                        strokeDasharray={circumference}
-                        initial={{ strokeDashoffset: circumference }}
-                        animate={{ strokeDashoffset: isInView ? offset : circumference }}
-                        transition={{ duration: 2, ease: "easeOut" }}
-                    />
-                </svg>
-                <div className="absolute inset-0 flex items-center justify-center flex-col">
-                    <span className="text-2xl font-bold text-white tracking-tighter" style={{ fontFamily: '"Montserrat", sans-serif' }}>{count}{suffix}</span>
-                </div>
-            </div>
-            <span className="text-[9px] text-white/40 tracking-[0.4em] uppercase text-center max-w-[100px]" style={{ fontFamily: '"Lexend Peta", sans-serif' }}>{label}</span>
-        </div>
-    );
-};
-
-const ProjectCard = ({ title, data, label, visual, index }) => {
     return (
         <motion.div
-            initial={{ opacity: 0, y: 50 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 1, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
-            className="project-card relative w-full aspect-[4/5] md:aspect-[16/11] bg-white/[0.01] border border-white/5 rounded-[24px] md:rounded-[32px] overflow-hidden group backdrop-blur-3xl shadow-2xl"
+            transition={{ delay: delay, duration: 1.0 }}
+            className="flex flex-col"
         >
-            <div className="absolute inset-0 z-0 opacity-40 group-hover:opacity-100 transition-opacity duration-1000">
-                {visual}
-            </div>
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent z-10" />
-
-            <div className="absolute bottom-0 left-0 w-full p-8 md:p-12 z-20">
-                <div className="flex flex-col gap-4">
-                    <span className="text-[#D4AF37] text-[10px] md:text-xs font-bold tracking-[0.6em] uppercase" style={{ fontFamily: '"Lexend Peta", sans-serif' }}>{label}</span>
-                    <h3 className="text-white text-3xl md:text-5xl font-extralight tracking-tight" style={{ fontFamily: '"Montserrat", sans-serif' }}>{title}</h3>
-                    <div className="flex items-center gap-8 mt-4">
-                        {data.map((item, i) => (
-                            <div key={i} className="flex flex-col">
-                                <span className="text-white text-lg md:text-xl font-bold tracking-tighter" style={{ fontFamily: '"Montserrat", sans-serif' }}>{item.val}</span>
-                                <span className="text-white/40 text-[8px] md:text-[9px] tracking-widest uppercase font-mono">{item.desc}</span>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
-
-            {/* Refraction Simulation Overlay */}
-            <div className="absolute inset-0 pointer-events-none border border-white/5 rounded-[24px] md:rounded-[32px] group-hover:border-white/20 transition-all duration-700" />
+            <span ref={ref} className="text-4xl md:text-5xl font-light text-white tracking-tight" style={{ fontFamily: '"Montserrat", sans-serif' }}>
+                0{cleanSuffix}
+            </span>
+            <span className="text-[10px] md:text-xs text-[#D4AF37] uppercase tracking-[0.2em] mt-2 font-bold" style={{ fontFamily: '"Lexend Peta", sans-serif' }}>
+                {label}
+            </span>
         </motion.div>
     );
 };
 
-// 3D Background - Para-refractive Asset
-const Hero3DScene = () => {
-    const meshRef = useRef();
-    const { mouse } = useThree();
-
-    useFrame((state) => {
-        if (!meshRef.current) return;
-        meshRef.current.rotation.y = THREE.MathUtils.lerp(meshRef.current.rotation.y, mouse.x * 0.2, 0.05);
-        meshRef.current.rotation.x = THREE.MathUtils.lerp(meshRef.current.rotation.x, -mouse.y * 0.2, 0.05);
-        meshRef.current.position.y = Math.sin(state.clock.getElapsedTime() * 0.5) * 0.2;
-    });
+const ProjectCaseStudy = ({ index, category, title, description, stats, mediaUrl, youtubeId, videoSrc, alignRight, isActive }) => {
+    // Only use basic ref for animation triggering, not playback control
+    const containerRef = useRef(null);
+    // const isProjectInView = useInView(containerRef, { amount: 0.3 }); // Removed in favor of explicit isActive prop
 
     return (
-        <Float speed={1.2} rotationIntensity={0.2} floatIntensity={0.5}>
-            <mesh ref={meshRef} position={[2, 0, 0]}>
-                <boxGeometry args={[4, 1.2, 2.5]} />
-                <meshPhysicalMaterial
-                    color="#C5A028"
-                    metalness={1}
-                    roughness={0.2}
-                    clearcoat={1}
-                    reflectivity={1}
-                />
-            </mesh>
-            <mesh position={[2, 0, 1]}>
-                <planeGeometry args={[10, 10]} />
-                <MeshTransmissionMaterial
-                    backside
-                    thickness={1}
-                    roughness={0.1}
-                    transmission={1}
-                    samples={8}
-                    resolution={256}
-                    ior={1.2}
-                    distortion={0.4}
-                />
-            </mesh>
-        </Float>
+        <section ref={containerRef} className="w-full md:h-screen md:sticky md:top-0 flex flex-col items-center justify-center relative bg-[#050505] border-t border-white/5 shadow-[0_-10px_40px_rgba(0,0,0,0.5)] z-0">
+            <div className={`w-full max-w-7xl px-6 md:px-12 flex flex-col lg:flex-row ${alignRight ? 'lg:flex-row-reverse' : ''} gap-16 items-center`}>
+
+                {/* Content Side */}
+                <motion.div
+                    initial={{ opacity: 0, x: alignRight ? 50 : -50 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true, margin: "-100px" }}
+                    transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
+                    className="w-full lg:w-1/2 flex flex-col space-y-8"
+                >
+                    <div className="flex flex-col gap-2">
+                        <span className="text-[#D4AF37] text-xs font-bold tracking-[0.4em] uppercase" style={{ fontFamily: '"Lexend Peta", sans-serif' }}>
+                            CASE STUDY 0{index + 1} — {category}
+                        </span>
+                        <h2 className="text-white text-4xl md:text-6xl font-light leading-tight" style={{ fontFamily: '"Montserrat", sans-serif' }}>
+                            {title}
+                        </h2>
+                    </div>
+
+                    <div className="w-20 h-[1px] bg-white/20" />
+
+                    <p className="text-white/70 text-base md:text-lg leading-relaxed font-light whitespace-pre-line" style={{ fontFamily: '"Montserrat", sans-serif' }}>
+                        {description}
+                    </p>
+
+                    <div className="grid grid-cols-2 gap-8 pt-4">
+                        {stats.map((s, i) => (
+                            <DataStat key={i} value={s.value} label={s.label} delay={0.2 + (i * 0.1)} />
+                        ))}
+                    </div>
+
+                    <button className="w-fit text-white text-xs tracking-[0.2em] uppercase border-b border-[#D4AF37] pb-1 hover:text-[#D4AF37] transition-colors mt-4">
+                        View Full Case Study
+                    </button>
+                </motion.div>
+
+                {/* Media Side */}
+                <div className="w-full lg:w-1/2">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.8 }}
+                        className="w-full aspect-video bg-zinc-900 rounded-xl overflow-hidden border border-white/10 relative group shadow-2xl"
+                    >
+                        {(isActive && youtubeId) ? (
+                            <iframe
+                                width="100%"
+                                height="100%"
+                                src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=0&loop=1&playlist=${youtubeId}&controls=0&showinfo=0&modestbranding=1`}
+                                title="YouTube video player"
+                                frameBorder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                allowFullScreen
+                                className="absolute inset-0 w-full h-full object-cover"
+                            ></iframe>
+                        ) : (isActive && videoSrc) ? (
+                            <video
+                                className="absolute inset-0 w-full h-full object-cover"
+                                autoPlay
+                                loop
+                                muted
+                                playsInline
+                                src={videoSrc}
+                            />
+                        ) : (
+                            <>
+                                {/* Placeholder for Video/Image */}
+                                <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105 opacity-80 group-hover:opacity-100"
+                                    style={{ backgroundImage: `url(${mediaUrl})` }}
+                                />
+                                {/* Overlay Gradient */}
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                                {/* Play Button / Action Indicator */}
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                    <div className="w-16 h-16 rounded-full border border-white/30 flex items-center justify-center backdrop-blur-sm group-hover:scale-110 transition-transform cursor-pointer">
+                                        <div className="w-0 h-0 border-t-[6px] border-t-transparent border-l-[12px] border-l-white border-b-[6px] border-b-transparent ml-1" />
+                                    </div>
+                                </div>
+                            </>
+                        )}
+                    </motion.div>
+                </div>
+
+            </div>
+        </section>
     );
 };
 
-// --- Page Component ---
-
 export const ProjectsPage = () => {
-    const { scrollYProgress } = useScroll();
-    const titleTracking = useTransform(scrollYProgress, [0, 0.2], ["1em", "0.2em"]);
-    const titleOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
+    const [activeIndex, setActiveIndex] = useState(0);
 
     useEffect(() => {
-        // Debugging log for routing confirmation
-        console.log("Projects Page Mounted");
+        const handleScroll = () => {
+            const h = window.innerHeight;
+            // Use slightly closer threshold (e.g. 0.4) to trigger earlier or ensure previous stops
+            const scrollPos = window.scrollY + (h * 0.5);
+            const index = Math.floor(scrollPos / h);
+            setActiveIndex(index);
+        };
+        window.addEventListener('scroll', handleScroll);
+        // Initial call
+        handleScroll();
+        return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
     return (
-        <div className="w-full bg-[#020202] text-white selection:bg-[#D4AF37] selection:text-black min-h-screen relative overflow-x-hidden cursor-none">
-            <StudioBackdrop />
-            <BlueprintGrid />
-            <NoiseOverlay />
+        <div className="w-full bg-[#050505] min-h-screen text-white relative selection:bg-[#D4AF37] selection:text-black">
             <CustomCursor />
+            <OnyxBackground />
 
-            {/* Navigation / Logo */}
+            {/* Navbar Placeholder */}
             <div className="fixed top-0 left-0 w-full z-50 flex justify-center pt-8 pointer-events-none">
                 <div className="pointer-events-auto">
                     <Group className="scale-75 origin-top" />
                 </div>
             </div>
 
-            {/* Step 1: Cinematic Header */}
-            <section className="relative w-full h-[80vh] flex flex-col items-center justify-center px-8">
-                <motion.div
-                    style={{ opacity: titleOpacity }}
-                    className="text-center z-10"
+            {/* Page Hero */}
+            <section className="min-h-screen w-full flex flex-col items-center justify-center text-center px-6 md:sticky md:top-0 bg-[#050505] z-0">
+                <motion.span
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
+                    className="text-[#D4AF37] text-xs font-bold tracking-[0.6em] uppercase mb-6"
+                    style={{ fontFamily: '"Lexend Peta", sans-serif' }}
                 >
-                    <motion.span
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2 }}
-                        className="text-[#D4AF37] text-[10px] md:text-xs font-bold tracking-[1em] uppercase block mb-6"
-                        style={{ fontFamily: '"Lexend Peta", sans-serif' }}
-                    >
-                        ARCHIVE CATALOG v2.4
-                    </motion.span>
-                    <motion.h1
-                        style={{ letterSpacing: titleTracking }}
-                        className="text-white text-6xl md:text-[140px] font-thin tracking-tighter leading-tight"
-                        style={{ fontFamily: '"Montserrat", sans-serif' }}
-                    >
-                        SELECTED ARCHIVES
-                    </motion.h1>
-                    <motion.p
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.6 }}
-                        className="text-white/40 text-[11px] md:text-sm tracking-[0.6em] uppercase mt-8"
-                        style={{ fontFamily: '"Lexend Peta", sans-serif' }}
-                    >
-                        2024 — 2026 Strategy & Execution
-                    </motion.p>
-                </motion.div>
-
-                {/* Background 3D Accent */}
-                <div className="absolute inset-0 z-0 opacity-20 pointer-events-none">
-                    <Canvas dpr={[1, 1.5]} camera={{ position: [0, 0, 10], fov: 35 }} gl={{ powerPreference: "high-performance" }}>
-                        <ambientLight intensity={0.5} />
-                        <spotLight position={[10, 10, 10]} intensity={1} color="#D4AF37" />
-                        <Suspense fallback={null}>
-                            <Hero3DScene />
-                            <Environment preset="studio" />
-                        </Suspense>
-                    </Canvas>
-                </div>
+                    SELECTED WORKS
+                </motion.span>
+                <motion.h1
+                    initial={{ opacity: 0, y: 100 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
+                    className="text-5xl md:text-8xl font-thin tracking-tighter mb-8"
+                    style={{ fontFamily: '"Clesmont", sans-serif' }}
+                >
+                    STRATEGIC<br />ARCHIVES
+                </motion.h1>
+                <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                    className="text-white/50 text-xs md:text-sm tracking-[0.3em] uppercase max-w-lg leading-loose"
+                    style={{ fontFamily: '"Lexend Peta", sans-serif' }}
+                >
+                    A collection of high-performance digital executions.
+                </motion.p>
             </section>
 
-            {/* Step 2: Main Project - Leven Real Estate */}
-            <section className="relative w-full py-32 px-4 sm:px-8 md:px-20 flex flex-col items-center">
-                <div className="w-full max-w-[1400px] flex flex-col md:flex-row gap-12 md:gap-24">
+            {/* Projects List - Clean Vertical Scroll */}
+            {/* 1. Video Editing */}
+            <ProjectCaseStudy
+                isActive={activeIndex === 1}
+                index={0}
+                category="VIDEO EDITING"
+                title="Leven Real Estate"
+                description={`Transforming raw footage into high-conversion emotional assets. We specialize in rhythmic editing and precision color grading to align property listings with luxury brand goals.
+                    
+                    The result is a narrative that increases buyer intent.`}
+                stats={[
+                    { value: "40%", label: "Increase in Views" },
+                    { value: "20%", label: "Sales Velocity" }
+                ]}
+                youtubeId="x_XKCNiBEVM"
+                mediaUrl="" // Fallback or unused
+                alignRight={false}
+            />
 
-                    {/* Strategy Column */}
-                    <div className="w-full md:w-5/12 flex flex-col justify-center space-y-10">
-                        <motion.div
-                            initial={{ opacity: 0, x: -50 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true }}
-                            className="space-y-4"
-                        >
-                            <span className="text-[#D4AF37] text-xs font-bold tracking-[0.5em] uppercase" style={{ fontFamily: '"Lexend Peta", sans-serif' }}>LEVEN REAL ESTATE</span>
-                            <h2 className="text-white text-5xl md:text-8xl font-extralight tracking-tighter leading-none" style={{ fontFamily: '"Montserrat", sans-serif' }}>
-                                Cinematic Real Estate Narrative
-                            </h2>
-                        </motion.div>
+            {/* 2. Social Media */}
+            <ProjectCaseStudy
+                isActive={activeIndex === 2}
+                index={1}
+                category="SOCIAL MEDIA"
+                title="Byson Real Estate"
+                description={`Orchestrating comprehensive digital strategies that elevate brand visibility. We helped Razor Sharp Barbershop grow its clientele through targeted content and community engagement.`}
+                stats={[
+                    { value: "30%", label: "New Bookings" },
+                    { value: "50%", label: "Traffic Hike" }
+                ]}
+                youtubeId="H4wjjXOWrgE"
+                mediaUrl=""
+                alignRight={true}
+            />
 
-                        <p className="text-white/60 text-lg md:text-xl leading-relaxed font-light" style={{ fontFamily: '"Montserrat", sans-serif' }}>
-                            Transforming raw property footage into high-conversion emotional assets.
-                            We focused on lighting texture and rhythmic editing to increase buyer intent.
-                        </p>
+            {/* 3. SEO */}
+            <ProjectCaseStudy
+                isActive={activeIndex === 3}
+                index={2}
+                category="LEAD GENERATION"
+                title="ArchiVision Architects"
+                description={`Achieving top-tier rankings through strategic SEO and data-backed lead capture. We positioned ArchiVision as the #1 authority in their niche.`}
+                stats={[
+                    { value: "60%", label: "Organic Traffic" },
+                    { value: "#1", label: "Page Rank" }
+                ]}
+                youtubeId="XhwemRc9_28"
+                mediaUrl=""
+                alignRight={false}
+            />
 
-                        <div className="flex gap-12 pt-8">
-                            <CounterOrb value={40} label="Increase in Views" />
-                            <CounterOrb value={20} label="Sales Velocity" />
-                        </div>
-                    </div>
+            {/* 4. Web Design */}
+            <ProjectCaseStudy
+                isActive={activeIndex === 4}
+                index={3}
+                category="WEB DESIGN"
+                title="Work4U Internal"
+                description={`A deep dive into high-fidelity user experiences. We built a platform where aesthetic meets performance, turning passive traffic into predictable revenue.`}
+                stats={[
+                    { value: "80%", label: "Keywords Ranked" },
+                    { value: "60%", label: "Lead Growth" }
+                ]}
+                youtubeId="IkrOdcF-hN0"
+                mediaUrl=""
+                alignRight={true}
+            />
 
-                    {/* Media Column */}
-                    <div className="w-full md:w-7/12 aspect-[16/10] bg-white/[0.02] border border-white/10 rounded-[40px] relative overflow-hidden group">
-                        <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors duration-1000 z-10" />
-                        {/* Mock Cinematic Video */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-zinc-800 to-black animate-pulse" />
-                        <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="w-full h-full opacity-60 group-hover:opacity-100 transition-opacity duration-1000" style={{ backgroundImage: 'url(https://framerusercontent.com/images/1mmewAvBFU9a5XFIcaDMfJ9bL4.webp)', backgroundSize: 'cover', backgroundPosition: 'center' }} />
-                        </div>
+            {/* Elite Footer CTA */}
+            <section className="w-full min-h-screen md:sticky md:top-0 flex flex-col items-center justify-center text-center px-6 bg-gradient-to-b from-[#050505] to-black z-10 relative">
+                <span className="text-[#D4AF37] text-xs font-bold tracking-[0.4em] uppercase mb-8" style={{ fontFamily: '"Lexend Peta", sans-serif' }}>THE INNER CIRCLE</span>
+                <h2 className="text-4xl md:text-6xl font-thin tracking-tight text-white mb-12" style={{ fontFamily: '"Montserrat", sans-serif' }}>
+                    READY TO SECURE<br />YOUR GROWTH?
+                </h2>
 
-                        {/* Live Recording UI */}
-                        <div className="absolute top-8 left-8 z-20 flex items-center gap-4">
-                            <div className="w-3 h-3 bg-red-600 rounded-full animate-pulse shadow-[0_0_15px_rgba(220,38,38,0.8)]" />
-                            <span className="text-white/60 text-[10px] font-mono tracking-[0.4em] uppercase">REC ● ONYX_LOG_4K</span>
-                        </div>
-                        <div className="absolute inset-0 pointer-events-none border border-white/5 rounded-[40px]" />
-                    </div>
-                </div>
-            </section>
-
-            {/* Step 3: Secondary Project Grid Archive */}
-            <section className="relative w-full py-32 px-4 sm:px-8 md:px-20 flex flex-col items-center">
-                <div className="w-full max-w-[1400px] mb-20 text-center md:text-left">
-                    <span className="text-[#D4AF37] text-xs font-bold tracking-[0.8em] uppercase block mb-4" style={{ fontFamily: '"Lexend Peta", sans-serif' }}>THE VAULT</span>
-                    <h2 className="text-white text-5xl md:text-7xl font-extralight tracking-tighter" style={{ fontFamily: '"Montserrat", sans-serif' }}>Systemic Portfolios</h2>
-                </div>
-
-                <div className="w-full max-w-[1400px] grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
-                    <ProjectCard
-                        index={0}
-                        label="BYSON REAL ESTATE"
-                        title="Social Media Architecture"
-                        data={[
-                            { val: "30%", desc: "Surge" },
-                            { val: "50%", desc: "Traffic" }
-                        ]}
-                        visual={
-                            <div className="w-full h-full flex flex-col justify-end p-12 opacity-40 group-hover:opacity-100 transition-opacity duration-700">
-                                <div className="flex items-end gap-1 h-20">
-                                    {[20, 60, 45, 90, 70, 30, 80].map((h, i) => (
-                                        <motion.div
-                                            key={i}
-                                            initial={{ height: 0 }}
-                                            whileInView={{ height: `${h}%` }}
-                                            className="w-full bg-[#D4AF37] opacity-60"
-                                        />
-                                    ))}
-                                </div>
-                            </div>
-                        }
+                <div className="w-full max-w-md relative group">
+                    <input
+                        type="email"
+                        placeholder="Enter your email..."
+                        className="w-full bg-transparent border-b border-white/20 py-4 text-center text-xl text-white outline-none focus:border-[#D4AF37] transition-colors font-light placeholder:text-white/20"
                     />
-                    <ProjectCard
-                        index={1}
-                        label="ARCHIVISION ARCHITECTS"
-                        title="SEO Strategic Ranking"
-                        data={[
-                            { val: "#1", desc: "Google Rank" },
-                            { val: "60%", desc: "Organic Growth" }
-                        ]}
-                        visual={
-                            <div className="w-full h-full p-20 flex items-center justify-center opacity-30 group-hover:opacity-70 transition-opacity">
-                                <svg width="100%" height="100%" viewBox="0 0 200 100" fill="none">
-                                    <motion.path
-                                        d="M0,100 Q40,90 80,40 T160,10 L200,0"
-                                        stroke="#D4AF37"
-                                        strokeWidth="1"
-                                        initial={{ pathLength: 0 }}
-                                        whileInView={{ pathLength: 1 }}
-                                        transition={{ duration: 2 }}
-                                    />
-                                </svg>
-                            </div>
-                        }
-                    />
-                    <ProjectCard
-                        index={2}
-                        label="WORK4U BRAND IDENTITY"
-                        title="Web Development & Logic"
-                        data={[
-                            { val: "80%", desc: "Dominance" },
-                            { val: "60%", desc: "Lead Growth" }
-                        ]}
-                        visual={
-                            <div className="w-full h-full flex items-center justify-center opacity-20 group-hover:opacity-50 transition-opacity p-20">
-                                <div className="w-full h-full border border-white/20 rounded-xl relative">
-                                    <div className="absolute top-4 left-4 w-12 h-[2px] bg-white/40" />
-                                    <div className="absolute bottom-4 right-4 w-32 h-20 border border-white/20 rounded-md" />
-                                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-[1px] bg-[#D4AF37] animate-pulse shadow-[0_0_10px_#D4AF37]" />
-                                </div>
-                            </div>
-                        }
-                    />
-                    {/* Placeholder for symmetry or extra project */}
-                    <div className="hidden md:flex flex-col items-center justify-center p-20 text-center opacity-20 hover:opacity-100 transition-opacity">
-                        <span className="text-[10px] tracking-widest text-white/40 mb-4" style={{ fontFamily: '"Lexend Peta", sans-serif' }}>SCANNING ARCHIVES...</span>
-                        <p className="text-white text-base">New connections being established weekly.</p>
-                    </div>
+                    <button className="absolute right-0 bottom-4 text-[#D4AF37] text-xs uppercase tracking-widest font-bold opacity-50 group-hover:opacity-100 transition-opacity">
+                        JOIN
+                    </button>
                 </div>
             </section>
 
-            {/* Step 5: The Vault - Newsletter CTA */}
-            <section className="relative w-full py-40 flex flex-col items-center px-4">
-                <div className="w-full max-w-4xl text-center space-y-12">
-                    <motion.h3
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        className="text-white text-5xl md:text-8xl font-thin tracking-tighter"
-                        style={{ fontFamily: '"Montserrat", sans-serif' }}
-                    >
-                        READY TO SECURE<br />YOUR GROWTH?
-                    </motion.h3>
-
-                    <div className="flex flex-col items-center gap-8">
-                        <p className="text-white/40 tracking-[0.4em] uppercase text-[10px] md:text-sm" style={{ fontFamily: '"Lexend Peta", sans-serif' }}>JOIN THE STRATEGIC INNER CIRCLE</p>
-                        <div className="w-full max-w-md relative flex items-center">
-                            <input
-                                type="email"
-                                placeholder="Communications email..."
-                                className="w-full bg-transparent border-b border-white/10 py-4 text-xl font-light focus:border-[#D4AF37] outline-none transition-colors"
-                            />
-                            <button className="absolute right-0 bottom-4 text-[10px] text-[#D4AF37] font-bold tracking-widest uppercase hover:text-white transition-colors">ACCESS BRIEF</button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Footer Style Ticker */}
-            <div className="py-20 bg-black border-t border-white/10 overflow-hidden relative opacity-20">
-                <div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-black z-10" />
-                <div className="flex space-x-20 animate-marquee whitespace-nowrap text-2xl font-bold uppercase text-transparent stroke-white" style={{ WebkitTextStroke: "1px rgba(255,255,255,0.2)" }}>
-                    <span>ONYX STUDIO</span> <span>PROJECTS</span> <span>2024</span> <span>ARCHIVES</span> <span>STRATEGY</span> <span>ONYX STUDIO</span> <span>PROJECTS</span> <span>2024</span>
-                </div>
-            </div>
-
-            {/* Inline CSS for Vignette */}
-            <style dangerouslySetInnerHTML={{
-                __html: `
-                .bg-radial-vignette {
-                    background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,1) 85%);
-                }
-                @keyframes marquee {
-                    0% { transform: translateX(0); }
-                    100% { transform: translateX(-50%); }
-                }
-                .animate-marquee {
-                    animation: marquee 20s linear infinite;
-                }
-            ` }} />
         </div>
     );
 };

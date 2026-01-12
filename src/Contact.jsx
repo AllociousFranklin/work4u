@@ -4,6 +4,7 @@ import { motion, AnimatePresence, useSpring, useMotionValue, useTransform } from
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Float, PerspectiveCamera, MeshTransmissionMaterial, Environment } from '@react-three/drei';
 import { Group } from './Group';
+import { CustomCursor } from './CustomCursor';
 import * as THREE from 'three';
 
 // --- Assets & Utilities ---
@@ -15,37 +16,6 @@ const NoiseOverlay = () => (
     />
 );
 
-const CustomCursor = () => {
-    const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-    const [isHovering, setIsHovering] = useState(false);
-
-    useEffect(() => {
-        const moveCursor = (e) => {
-            setMousePos({ x: e.clientX, y: e.clientY });
-            const target = e.target;
-            const interactive = target.closest('button') || target.closest('a') || target.closest('input') || target.closest('.interactive');
-            setIsHovering(!!interactive);
-        };
-        window.addEventListener("mousemove", moveCursor);
-        return () => window.removeEventListener("mousemove", moveCursor);
-    }, []);
-
-    return (
-        <motion.div
-            className="fixed top-0 left-0 w-6 h-6 rounded-full border border-white/20 pointer-events-none z-[10000] mix-blend-difference flex items-center justify-center bg-white/0"
-            animate={{
-                x: mousePos.x - 12,
-                y: mousePos.y - 12,
-                scale: isHovering ? 2 : 1,
-                borderColor: isHovering ? "rgba(255,255,255,0)" : "rgba(255,255,255,0.2)",
-                backgroundColor: isHovering ? "rgba(255,255,255,1)" : "rgba(255,255,255,0)"
-            }}
-            transition={{ type: "spring", stiffness: 250, damping: 25, mass: 0.1 }}
-        >
-            {isHovering && <div className="w-1 h-1 bg-black rounded-full" />}
-        </motion.div>
-    );
-};
 
 // 2. Blueprint Grid: Interactive Non-Uniform
 const BlueprintGrid = () => {

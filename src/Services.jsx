@@ -2,6 +2,7 @@ import { motion, useScroll, useTransform, useSpring, useMotionValue } from "fram
 import { useRef, useState, useEffect } from "react";
 import { Group } from "./Group";
 import { Link } from 'react-router-dom';
+import { CustomCursor } from './CustomCursor';
 
 // Import Assets
 import cinimaticVideo from './assets/cinimatic_background.mp4';
@@ -9,48 +10,12 @@ import beforePic from './assets/before_pic.png';
 import afterPic from './assets/after_pic.png';
 
 // --- Assets & Utilities ---
+// --- Assets & Utilities ---
 const NoiseOverlay = () => (
     <div className="fixed inset-0 pointer-events-none z-[9999] opacity-[0.03] mix-blend-overlay"
         style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
     />
 );
-
-const CustomCursor = () => {
-    const cursorRef = useRef(null);
-    const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-    const [isHovering, setIsHovering] = useState(false);
-
-    useEffect(() => {
-        const moveCursor = (e) => {
-            setMousePos({ x: e.clientX, y: e.clientY });
-            // Check if hovering over interactive elements
-            const target = e.target;
-            setIsHovering(
-                target.tagName === 'BUTTON' ||
-                target.tagName === 'A' ||
-                target.closest('.interactive-hover')
-            );
-        };
-        window.addEventListener("mousemove", moveCursor);
-        return () => window.removeEventListener("mousemove", moveCursor);
-    }, []);
-
-    return (
-        <motion.div
-            className="fixed top-0 left-0 w-8 h-8 rounded-full border border-white pointer-events-none z-[10000] mix-blend-difference flex items-center justify-center bg-white/0"
-            animate={{
-                x: mousePos.x - 16,
-                y: mousePos.y - 16,
-                scale: isHovering ? 2.5 : 1,
-                borderColor: isHovering ? "rgba(255,255,255,0)" : "rgba(255,255,255,1)",
-                backgroundColor: isHovering ? "rgba(255,255,255,1)" : "rgba(255,255,255,0)"
-            }}
-            transition={{ type: "spring", stiffness: 150, damping: 15, mass: 0.1 }}
-        >
-            {isHovering && <span className="text-black text-[3px] font-bold uppercase tracking-widest">View</span>}
-        </motion.div>
-    );
-};
 
 // --- Components ---
 
