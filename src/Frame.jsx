@@ -116,11 +116,11 @@ export const Frame = () => {
                     <Box />
                 </div>
 
-                <div className="absolute top-[25px] left-[366px] z-10 w-[920px] animate-float-bottom [animation-delay:1600ms]">
+                <div className="absolute top-[25px] left-[250px] xl:left-[366px] z-10 w-[920px] animate-float-bottom [animation-delay:1600ms]">
                     <Group />
                 </div>
 
-                <div className="absolute top-[32px] right-[162px] z-50 animate-slide-right [animation-delay:800ms]">
+                <div className="absolute top-[25px] xl:top-[52px] left-[20px] xl:left-auto xl:right-[162px] z-50 animate-slide-right [animation-delay:800ms]">
                     <ContactButton />
                 </div>
 
