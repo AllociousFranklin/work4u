@@ -198,19 +198,22 @@ const EditingVisual = () => {
     const containerRef = useRef(null);
     const [sliderPos, setSliderPos] = useState(50);
 
-    const handleMouseMove = (e) => {
+    const handleMove = (clientX) => {
         if (!containerRef.current) return;
         const rect = containerRef.current.getBoundingClientRect();
-        const clientX = e.clientX;
         const newPos = ((clientX - rect.left) / rect.width) * 100;
         setSliderPos(Math.min(Math.max(newPos, 0), 100));
     };
+
+    const handleMouseMove = (e) => handleMove(e.clientX);
+    const handleTouchMove = (e) => handleMove(e.touches[0].clientX);
 
     return (
         <div
             className="w-full h-full relative select-none cursor-col-resize overflow-hidden"
             ref={containerRef}
             onMouseMove={handleMouseMove}
+            onTouchMove={handleTouchMove}
         >
             {/* After Image */}
             <div className="absolute inset-0 bg-cover bg-center"
@@ -328,16 +331,16 @@ export const ServicesPage = () => {
             <CustomCursor />
 
             {/* Fixed Navbar similar to Frame but static */}
-            <div className="fixed top-0 left-0 w-full z-50 flex justify-center pt-6 pointer-events-none">
-                <div className="pointer-events-auto">
-                    <Group className="scale-75 origin-top" />
+            <div className="fixed top-0 left-0 w-full z-50 flex justify-center py-6 pointer-events-none">
+                <div className="pointer-events-auto w-full flex justify-center">
+                    <Group />
                 </div>
             </div>
 
             {/* Intro / Hero of Services */}
-            <div className="h-[60vh] md:h-[70vh] flex flex-col items-center justify-center relative overflow-hidden px-4">
+            <div className="h-[50vh] md:h-[70vh] flex flex-col items-center justify-center relative overflow-hidden px-2 pt-20 pb-20">
                 <motion.h1
-                    className="text-white text-[60px] sm:text-[80px] md:text-[120px] font-thin leading-none z-10 mix-blend-difference text-center"
+                    className="text-white text-[11vw] sm:text-[80px] md:text-[120px] font-thin leading-none z-10 mix-blend-difference text-center w-full break-normal whitespace-nowrap"
                     style={{
                         fontFamily: '"Clesmont", sans-serif',
                         letterSpacing: headerTracking
@@ -349,7 +352,7 @@ export const ServicesPage = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.5 }}
-                    className="text-gray-400 mt-8 tracking-[0.5em] uppercase text-xs z-10"
+                    className="text-gray-400 mt-2 tracking-[0.5em] uppercase text-[10px] md:text-xs z-10 text-center"
                 >
                     Beyond Boundaries
                 </motion.div>

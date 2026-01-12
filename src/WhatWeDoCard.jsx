@@ -1,6 +1,6 @@
-export const WhatWeDoCard = () => {
+export const WhatWeDoCard = ({ className = "w-[286px] h-[195px]" }) => {
     return (
-        <div className="w-[286px] h-[195px] relative">
+        <div className={`${className} relative`}>
             {/* Glass Background */}
             <div className="absolute w-full h-full top-0 left-0 bg-[#ffffff10] rounded-[40px] backdrop-blur-[20px] border border-white/20 shadow-xl" />
 
