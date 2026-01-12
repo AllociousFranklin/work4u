@@ -120,7 +120,7 @@ export const Frame = () => {
                     <Group />
                 </div>
 
-                <div className="absolute top-[52px] right-[162px] z-50 animate-slide-right [animation-delay:800ms]">
+                <div className="absolute top-[32px] right-[162px] z-50 animate-slide-right [animation-delay:800ms]">
                     <ContactButton />
                 </div>
 
