@@ -55,7 +55,9 @@ export const Frame = () => {
                     transition={{ duration: 2, ease: [0.22, 1, 0.36, 1] }}
                     className="w-full flex flex-col items-center gap-6 z-10"
                 >
-                    {/* Logo Removed */}
+                    <div className="w-full flex justify-start px-2">
+                        <h1 className="text-white text-3xl font-normal" style={{ fontFamily: '"Satisfy", cursive' }}>Work4U</h1>
+                    </div>
                     <ContactButton className="w-[160px] h-[50px]" />
                 </motion.div>
 
