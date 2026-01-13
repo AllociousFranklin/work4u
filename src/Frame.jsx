@@ -61,9 +61,9 @@ export const Frame = () => {
 
 
                 {/* Full Screen Video Background */}
-                <div className="fixed inset-0 z-0 pointer-events-none">
+                <div className="fixed inset-0 z-0 pointer-events-none bg-black">
                     <video
-                        className="absolute inset-0 w-full h-full object-cover opacity-60"
+                        className="absolute inset-0 w-full h-full object-cover opacity-60 scale-90"
                         autoPlay
                         loop
                         muted

@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import companyLogo from './assets/company_symbol.png'; // Updated to new cropped symbol
 
 export const Footer = () => {
     return (
@@ -11,7 +10,6 @@ export const Footer = () => {
                     {/* Logo Wrapper */}
                     <div className="flex items-center gap-3 mb-4 relative z-10 pl-1">
                         <h3 className="text-white text-2xl font-normal" style={{ fontFamily: '"Satisfy", cursive' }}>Work4U</h3>
-                        <img src={companyLogo} alt="Logo" className="w-[60px] md:w-[80px] object-contain drop-shadow-2xl mix-blend-screen pt-2" />
                     </div>
 
                     {/* Contact Text Wrapper */}
