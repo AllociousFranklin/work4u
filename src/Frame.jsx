@@ -62,16 +62,30 @@ export const Frame = () => {
 
 
                 {/* Full Screen Video Background */}
-                <div className="fixed inset-0 z-0 pointer-events-none bg-black">
+                <div className="fixed inset-0 z-0 pointer-events-none bg-black overflow-hidden">
+                    {/* Ambient Background Layer (Fills gaps without cutting content) */}
                     <video
-                        className="absolute inset-0 w-full h-full object-cover opacity-60 scale-90"
+                        className="absolute inset-0 w-full h-full object-cover opacity-20 blur-2xl scale-125"
                         autoPlay
                         loop
                         muted
                         playsInline
                         src={videoBg}
                     />
-                    <div className="absolute inset-0 bg-black/40" /> {/* Contrast Overlay */}
+
+                    {/* Primary Content Layer (Zoomed Out / Minimal Crop) */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <video
+                            className="w-full h-full object-contain opacity-70 scale-[1.6]"
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                            src={videoBg}
+                        />
+                    </div>
+
+                    <div className="absolute inset-0 bg-black/10" /> {/* Ambient Overlay */}
                 </div>
 
                 {/* Spacer to push content down slightly since Box is gone */}
