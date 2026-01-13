@@ -1,8 +1,9 @@
+import { Link } from 'react-router-dom';
 import expertProfile from "./assets/expert_profile.png";
 
 export const ConnectExpertsCard = ({ className = "w-[286px] h-[100px]" }) => {
     return (
-        <div className={`${className} relative group cursor-pointer`}>
+        <Link to="/projects" className={`${className} block relative group cursor-pointer`}>
             {/* Glass Background */}
             <div className="absolute w-full h-full top-0 left-0 bg-[#ffffff10] rounded-[40px] backdrop-blur-[20px] border border-white/20 shadow-xl transition-all duration-300 group-hover:bg-[#ffffff20] group-hover:scale-[1.05] group-hover:border-white/40 group-active:scale-95 group-hover:shadow-[0_0_30px_rgba(255,255,255,0.15)]" />
 
@@ -35,6 +36,6 @@ export const ConnectExpertsCard = ({ className = "w-[286px] h-[100px]" }) => {
                     </svg>
                 </div>
             </div>
-        </div>
+        </Link>
     );
 };
