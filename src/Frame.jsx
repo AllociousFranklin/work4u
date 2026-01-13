@@ -9,7 +9,7 @@ import { WeBuildDigital } from "./WeBuildDigital";
 import { FromWebDesignAnd } from "./FromWebDesignAnd";
 import { ContactButton } from "./ContactButton";
 import { Sidebar } from "./Sidebar";
-import videoBg from "./assets/video.mp4";
+import videoBg from "./assets/money.mp4";
 
 export const Frame = () => {
     const [dims, setDims] = useState({ width: 1280, height: 820, scale: 1 });

@@ -1,4 +1,4 @@
-import videoBg from "./assets/video.mp4";
+import videoBg from "./assets/money.mp4";
 
 export const Box = ({ className = "fixed top-[21px] left-[291px]" }) => {
     return (
