@@ -9,7 +9,7 @@ import { WeBuildDigital } from "./WeBuildDigital";
 import { FromWebDesignAnd } from "./FromWebDesignAnd";
 import { ContactButton } from "./ContactButton";
 import { Sidebar } from "./Sidebar";
-import videoBg from "./assets/moneyy.mp4";
+import videoBg from "./assets/money.mp4";
 
 export const Frame = () => {
     const [dims, setDims] = useState({ width: 1280, height: 820, scale: 1 });
@@ -58,7 +58,6 @@ export const Frame = () => {
                     <div className="w-full flex justify-start px-2">
                         <h1 className="text-white text-3xl font-normal" style={{ fontFamily: '"Satisfy", cursive' }}>Work4U</h1>
                     </div>
-                    <ContactButton className="w-[160px] h-[50px]" />
                 </motion.div>
 
 
@@ -177,9 +176,7 @@ export const Frame = () => {
                     <Group className="min-[1080px]:w-[920px]" />
                 </div>
 
-                <div className="absolute top-[25px] min-[1080px]:top-[52px] left-[20px] min-[1080px]:left-auto min-[1080px]:right-[162px] z-50 animate-slide-right [animation-delay:800ms]">
-                    <ContactButton />
-                </div>
+
 
                 <div className="absolute top-[340px] right-[179px] z-20 flex flex-col gap-6 animate-float-bottom [animation-delay:4000ms]">
                     <WhatWeDoCard />
