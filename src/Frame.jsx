@@ -65,7 +65,7 @@ export const Frame = () => {
                 <div className="fixed inset-0 z-0 pointer-events-none bg-black overflow-hidden">
                     {/* Ambient Background Layer (Fills gaps without cutting content) */}
                     <video
-                        className="absolute inset-0 w-full h-full object-cover opacity-20 blur-2xl scale-125"
+                        className="absolute inset-0 w-full h-full object-cover opacity-80 blur-2xl scale-125"
                         autoPlay
                         loop
                         muted
