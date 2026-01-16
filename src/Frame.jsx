@@ -61,9 +61,9 @@ export const Frame = () => {
                 </motion.div>
 
 
-                {/* Full Screen Video Background */}
+                {/* Full Screen Video Background - Ambient Hybrid */}
                 <div className="fixed inset-0 z-0 pointer-events-none bg-black overflow-hidden">
-                    {/* Ambient Background Layer (Fills gaps without cutting content) */}
+                    {/* Background Layer: Fills the top/bottom "Black Spaces" with blurred color */}
                     <video
                         className="absolute inset-0 w-full h-full object-cover opacity-80 blur-2xl scale-125"
                         autoPlay
@@ -73,10 +73,10 @@ export const Frame = () => {
                         src={videoBg}
                     />
 
-                    {/* Primary Content Layer (Zoomed Out / Minimal Crop) */}
+                    {/* Foreground Layer: The 65% zoom visibility you liked */}
                     <div className="absolute inset-0 flex items-center justify-center">
                         <video
-                            className="w-full h-full object-contain opacity-70 scale-[1.6]"
+                            className="w-full h-full object-contain opacity-60 scale-[1.54]"
                             autoPlay
                             loop
                             muted
@@ -85,7 +85,7 @@ export const Frame = () => {
                         />
                     </div>
 
-                    <div className="absolute inset-0 bg-black/10" /> {/* Ambient Overlay */}
+                    <div className="absolute inset-0 bg-black/20" /> {/* Overlay to unify */}
                 </div>
 
                 {/* Spacer to push content down slightly since Box is gone */}
