@@ -10,6 +10,7 @@ import { FromWebDesignAnd } from "./FromWebDesignAnd";
 import { ContactButton } from "./ContactButton";
 import { Sidebar } from "./Sidebar";
 import videoBg from "./assets/money.mp4";
+import videoBgMobile from "./assets/money_mobile.mp4"; // This will be your vertical version
 
 export const Frame = () => {
     const [dims, setDims] = useState({ width: 1280, height: 820, scale: 1 });
@@ -61,15 +62,23 @@ export const Frame = () => {
                 </motion.div>
 
 
-                {/* Full Screen Video Background */}
+                {/* Full Screen Video Background - Moving Camera (Panning) Effect */}
                 <div className="fixed inset-0 z-0 pointer-events-none bg-black overflow-hidden">
-                    <video
+                    <motion.video
                         className="absolute inset-0 w-full h-full object-cover opacity-60"
                         autoPlay
                         loop
                         muted
                         playsInline
                         src={videoBg}
+                        animate={{
+                            objectPosition: ["0% 50%", "100% 50%", "0% 50%"]
+                        }}
+                        transition={{
+                            duration: 20,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                        }}
                     />
                     <div className="absolute inset-0 bg-black/40" /> {/* Contrast Overlay */}
                 </div>
