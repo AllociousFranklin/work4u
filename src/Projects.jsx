@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform, useInView, useMotionValue, animate } from 'framer-motion';
 import { Group } from './Group';
 import { CustomCursor } from './CustomCursor';
+import SEO from "./SEO";
 
 // --- Shared Assets ---
 
@@ -187,6 +188,10 @@ export const ProjectsPage = () => {
 
     return (
         <div className="w-full bg-[#050505] min-h-screen text-white relative selection:bg-[#D4AF37] selection:text-black">
+            <SEO
+                title="Elite Projects & Case Studies"
+                description="View our portfolio of high-performance digital executions, including professional video editing, strategic social media, and elite branding."
+            />
             <CustomCursor />
             <OnyxBackground />
 

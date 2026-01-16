@@ -5,6 +5,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Float, PerspectiveCamera, MeshTransmissionMaterial, Environment } from '@react-three/drei';
 import { Group } from './Group';
 import { CustomCursor } from './CustomCursor';
+import SEO from "./SEO";
 import * as THREE from 'three';
 
 // --- Assets & Utilities ---
@@ -310,6 +311,10 @@ export const ContactPage = () => {
 
     return (
         <div className="w-full h-screen bg-[#020202] relative overflow-hidden flex flex-col items-center text-white selection:bg-[#D4AF37] selection:text-black">
+            <SEO
+                title="Establish Connection"
+                description="Secure your strategic consultation with Work4U. Let's discuss your vision and how we can elevate your digital presence."
+            />
             <StudioBackdrop />
             <BlueprintGrid />
             <NoiseOverlay />

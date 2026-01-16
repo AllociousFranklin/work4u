@@ -3,6 +3,7 @@ import { useRef, useState, useEffect } from "react";
 import { Group } from "./Group";
 import { Link } from 'react-router-dom';
 import { CustomCursor } from './CustomCursor';
+import SEO from "./SEO";
 
 // Import Assets
 import cinimaticVideo from './assets/cinimatic_background.mp4';
@@ -295,6 +296,10 @@ export const ServicesPage = () => {
 
     return (
         <div className="w-full bg-[#020202] relative cursor-none" ref={containerRef}>
+            <SEO
+                title="Elite Digital Services"
+                description="Explore our range of premium digital services including Web Design, Strategic Media, Expert Video Editing, and High-Conversion Lead Generation."
+            />
             <NoiseOverlay />
             <CustomCursor />
 

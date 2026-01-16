@@ -9,6 +9,7 @@ import { WeBuildDigital } from "./WeBuildDigital";
 import { FromWebDesignAnd } from "./FromWebDesignAnd";
 import { ContactButton } from "./ContactButton";
 import { Sidebar } from "./Sidebar";
+import SEO from "./SEO";
 import videoBg from "./assets/money.mp4";
 import videoBgMobile from "./assets/money_mobile.mp4"; // This will be your vertical version
 
@@ -41,6 +42,10 @@ export const Frame = () => {
     if (isMobile) {
         return (
             <div className="bg-[#020202] w-full min-h-screen flex flex-col items-center gap-8 pt-8 pb-32 px-4 relative overflow-x-hidden">
+                <SEO
+                    title="Premium Digital Agency"
+                    description="Work4U is an elite digital agency specializing in high-end web design, strategic media, and lead generation. Transforming digital visions into reality."
+                />
                 {/* Noise and Background Shared */}
                 <div className="fixed inset-0 pointer-events-none z-0 opacity-[0.05] mix-blend-overlay"
                     style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
@@ -162,7 +167,10 @@ export const Frame = () => {
 
     return (
         <div className="bg-[#020202] w-screen h-screen overflow-hidden">
-            <title>Work4U | Digital Agency</title>
+            <SEO
+                title="Premium Digital Agency"
+                description="Work4U is an elite digital agency specializing in high-end web design, strategic media, and lead generation. Transforming digital visions into reality."
+            />
 
             <div
                 className="relative bg-[#020202] origin-top-left shadow-2xl"
