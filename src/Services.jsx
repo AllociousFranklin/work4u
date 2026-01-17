@@ -246,12 +246,15 @@ const LeadGenVisual = ({ inView }) => {
 
             {/* Bottom Row: CTA & Details */}
             <div className="h-24 flex gap-4">
-                <div className="flex-1 bg-white/[0.03] rounded-2xl border border-white/10 flex items-center justify-between px-6 hover:border-[#D4AF37]/50 transition-colors cursor-pointer group">
+                <Link
+                    to="/projects"
+                    className="flex-1 bg-white/[0.03] rounded-2xl border border-white/10 flex items-center justify-between px-6 hover:border-[#D4AF37]/50 transition-colors cursor-pointer group decoration-none"
+                >
                     <span className="text-white font-medium">View Case Study</span>
                     <div className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center group-hover:scale-110 transition-transform">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
                     </div>
-                </div>
+                </Link>
                 <div className="w-48 bg-[#0a0a0a] rounded-2xl border border-white/5 flex items-center justify-center">
                     <span className="text-xs text-white/30 font-mono">EST. 2026</span>
                 </div>

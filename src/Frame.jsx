@@ -189,26 +189,26 @@ export const Frame = () => {
                     <Box />
                 </div>
 
-                <div className="absolute top-[25px] left-[250px] min-[1080px]:left-[366px] z-10 w-[920px] animate-float-bottom [animation-delay:1600ms]">
+                <div className="absolute top-[25px] left-[250px] min-[1080px]:left-[366px] z-10 w-[920px] animate-float-bottom [animation-delay:1200ms]">
                     <Group className="min-[1080px]:w-[920px]" />
                 </div>
 
 
 
-                <div className="absolute top-[340px] right-[179px] z-20 flex flex-col gap-6 animate-float-bottom [animation-delay:4000ms]">
+                <div className="absolute top-[340px] right-[179px] z-20 flex flex-col gap-6 animate-float-bottom [animation-delay:1200ms]">
                     <WhatWeDoCard />
                     <ConnectExpertsCard />
                 </div>
 
-                <div className="absolute top-[230px] left-[340px] z-20 pointer-events-none animate-float-bottom [animation-delay:2400ms]">
+                <div className="absolute top-[230px] left-[340px] z-20 pointer-events-none animate-float-bottom [animation-delay:1200ms]">
                     <WeBuildDigital />
                 </div>
 
-                <div className="absolute top-[500px] left-[340px] z-20 animate-float-bottom [animation-delay:4800ms]">
+                <div className="absolute top-[500px] left-[340px] z-20 animate-float-bottom [animation-delay:1200ms]">
                     <FromWebDesignAnd />
                 </div>
 
-                <div className="absolute bottom-[58px] left-[65px] z-20 animate-slide-left [animation-delay:3200ms]">
+                <div className="absolute bottom-[58px] left-[65px] z-20 animate-slide-left [animation-delay:1200ms]">
                     <TransformCard />
                 </div>
             </div>

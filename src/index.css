@@ -49,15 +49,15 @@
 }
 
 .animate-slide-left {
-  animation: slide-left 3.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation: slide-left 3.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
 .animate-slide-right {
-  animation: slide-right 3.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation: slide-right 3.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
 .animate-float-bottom {
-  animation: float-bottom 3.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation: float-bottom 3.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
 @keyframes slide-left {
